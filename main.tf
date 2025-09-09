@@ -39,7 +39,7 @@ access_config {
   
 }
   }
- tags = ["web", "dev", "private"]
+ tags = ["web", "dev", "private", "mynewwork"]
 }
 
 resource "google_compute_firewall" "allow_http" {
