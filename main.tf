@@ -41,3 +41,77 @@ access_config {
   }
  tags = ["web", "dev", "private"]
 }
+
+resource "google_compute_firewall" "allow_http" {
+  name    = "allow-http"
+  network = google_compute_network.vpc_network.name
+  project = var.project_id
+
+  allow {
+    protocol = "tcp"
+    ports    = ["80", "443"]
+  }
+
+  source_ranges = ["0.0.0.0/0"]
+  direction     = "INGRESS"
+  priority      = 1000  
+
+}
+
+resource "google_compute_firewall" "allow_ssh" {
+  name    = "allow-ssh"
+  network = google_compute_network.vpc_network.name
+  project = var.project_id
+
+  allow {
+    protocol = "tcp"
+    ports    = ["22"]
+  }
+
+  source_ranges = ["0.0.0.0/0"]
+  direction     = "INGRESS"
+  priority      = 1000
+}
+
+resource "google_compute_firewall" "allow_icmp" {
+  name    = "allow-icmp"
+  network = google_compute_network.vpc_network.name
+  project = var.project_id
+
+  allow {
+    protocol = "icmp"
+  }
+
+  source_ranges = ["0.0.0.0/0"]
+  direction     = "INGRESS"
+  priority      = 1000 
+}
+
+resource "google_compute_firewall" "allow_rdp" {
+  name    = "allow-rdp"
+  network = google_compute_network.vpc_network.name
+  project = var.project_id
+
+  allow {
+    protocol = "tcp"
+    ports    = ["3389"]
+  }
+
+  source_ranges = ["0.0.0.0/0"]
+  direction     = "INGRESS"
+  priority      = 1000
+}
+
+resource "google_compute_firewall" "allow_internal" { 
+  name    = "allow-internal"
+  network = google_compute_network.vpc_network.name
+  project = var.project_id
+
+  allow {
+    protocol = "all"
+  }
+
+  source_ranges = ["0.0.0.0/0"]
+  direction     = "INGRESS"
+  priority      = 1000
+}
