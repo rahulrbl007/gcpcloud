@@ -39,5 +39,5 @@ access_config {
   
 }
   }
- tags = ["web", "dev"]
+ tags = ["web", "dev", "private"]
 }
