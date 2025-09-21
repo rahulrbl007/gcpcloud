@@ -140,7 +140,6 @@ resource "google_compute_instance_group" "instance_group" {
   zone        = var.zone
   project     = var.project_id
   instances   = [google_compute_instance.vm_instance.id, google_compute_instance.vm_instance_2.id]
-  managed    = true
   named_port {
     name = "http"
     port = 80
