@@ -149,3 +149,54 @@ resource "google_compute_instance_group" "instance_group" {
     port = 443
   } 
 }
+
+resource "google_compute_instance_template" "instance_template" {
+  name         = "terraform-instance-template"
+  machine_type = "e2-medium"
+  project      = var.project_id
+
+  disk {
+    source_image = "debian-cloud/debian-11"
+    auto_delete  = true
+    boot         = true
+    disk_size_gb = 10
+    disk_type    = "pd-standard"
+  }
+
+  network_interface {
+    network = google_compute_network.vpc_network.name
+    access_config {
+      
+    }
+  }
+
+  tags = ["web", "dev", "private", "mynewwork"]
+}
+
+resource "google_compute_instance_group_manager" "instance_group_manager" {
+  name               = "terraform-instance-group-manager"
+  base_instance_name = "mig-instance"
+  zone               = var.zone
+  project            = var.project_id
+  version {
+    instance_template = google_compute_instance_template.instance_template.id
+  }
+  target_size        = 2
+}
+
+resource "google_compute_autoscaler" "autoscaler" {
+  name        = "terraform-autoscaler"
+  target      = google_compute_instance_group_manager.instance_group_manager.id
+  project     = var.project_id
+  zone        = var.zone
+
+  autoscaling_policy {
+    max_replicas    = 5
+    min_replicas    = 3
+    cooldown_period = 60
+
+    cpu_utilization {
+      target = 0.6
+    }
+  }
+}
