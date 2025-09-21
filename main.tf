@@ -115,3 +115,20 @@ resource "google_compute_firewall" "allow_internal" {
   direction     = "INGRESS"
   priority      = 1000
 }
+
+resource "google_instance_group" "instance_group" {
+  name        = "terraform-instance-group"
+  zone        = var.zone
+  project     = var.project_id
+  instances   = [google_compute_instance.vm_instance.id]
+  //max_pods    = 100
+  min_size    = 3
+  max_size    = 5
+  scale_based_on_cpu_utilization {
+    target_utilization = 0.6
+  named_port {
+    name = "http"
+    port = 80
+  }
+}
+}
