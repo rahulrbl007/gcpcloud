@@ -42,6 +42,25 @@ access_config {
  tags = ["web", "dev", "private", "mynewwork"]
 }
 
+resource "google_compute_instance" "vm_instance_2" {
+  name         = "terraform-instance-2"
+  machine_type = "e2-medium"
+  zone         = var.zone
+  project      = var.project_id
+
+  boot_disk {
+    initialize_params {
+      image = "debian-cloud/debian-11"
+      size  = 10
+      type  = "pd-standard"
+    }
+  }
+
+  network_interface {
+    network = google_compute_network.vpc_network.name
+  }
+}
+
 resource "google_compute_firewall" "allow_http" {
   name    = "allow-http"
   network = google_compute_network.vpc_network.name
@@ -116,19 +135,18 @@ resource "google_compute_firewall" "allow_internal" {
   priority      = 1000
 }
 
-resource "google_instance_group" "instance_group" {
+resource "google_compute_instance_group" "instance_group" {
   name        = "terraform-instance-group"
   zone        = var.zone
   project     = var.project_id
-  instances   = [google_compute_instance.vm_instance.id]
-  //max_pods    = 100
-  min_size    = 3
-  max_size    = 5
-  scale_based_on_cpu_utilization {
-    target_utilization = 0.6
+  instances   = [google_compute_instance.vm_instance.id, google_compute_instance.vm_instance_2.id]
+  managed    = true
   named_port {
     name = "http"
     port = 80
   }
-}
+  named_port {
+    name = "https"
+    port = 443
+  } 
 }
